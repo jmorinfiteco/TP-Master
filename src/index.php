@@ -2,7 +2,12 @@
 session_start();
 require_once('bdd.php');
 
-if (isset($_POST['email']) && isset($_POST['password'])) {
+// Génération d'un token CSRF si inexistant
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
@@ -33,6 +38,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
 <div class="container">
     <h1>Connexion :</h1>
     <form action="/" method="POST">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
         <div class="form-group">
             <label for="email">Email :</label>
             <input type="email" class="form-control" name="email" required>
