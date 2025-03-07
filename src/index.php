@@ -15,6 +15,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     if(!empty($user)){
         $_SESSION['user'] = $user;
         header('Location: profil.php?id='.$user['id']);
+        exit;
     }
 }
 ?>
