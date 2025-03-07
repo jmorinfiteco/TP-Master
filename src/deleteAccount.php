@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once('bdd.php');
-$config = require_once 'config.php';
+$config = require 'config.php';
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $connexion = getDb($config);

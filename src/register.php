@@ -2,7 +2,7 @@
 session_start();
 require_once('bdd.php');
 
-$config = require_once 'config.php';
+$config = require 'config.php';
 
 if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
     $username = $_POST['username'];
