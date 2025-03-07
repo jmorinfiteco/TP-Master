@@ -1,6 +1,6 @@
 <?php
 
-$config = require('/../config.php');
+$config = require_once 'config.php';
 
 function getDb($config)
 {
