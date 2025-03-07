@@ -1,14 +1,15 @@
 <?php
 session_start();
 require_once('bdd.php');
-if(isset($_GET['id'])) {
+$config = require 'config.php';
+if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $connexion = getDb();
+    $connexion = getDb($config);
     $sql = "SELECT * FROM users WHERE id = '$id'";
     $req = $connexion->prepare($sql);
     $req->execute();
     $user = $req->fetch();
-    if(empty($user)) {
+    if (empty($user)) {
         echo "Il n'y a pas d'utilisateur avec cet id";
     } else {
         $sql = "DELETE FROM users WHERE id = '$id'";
@@ -20,4 +21,3 @@ if(isset($_GET['id'])) {
 } else {
     header('Location: index.php');
 }
-
