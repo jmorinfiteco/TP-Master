@@ -2,41 +2,57 @@
 session_start();
 require_once('bdd.php');
 
-if(isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
+$error = [];
+
+if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['password']) && isset($_POST['password_confirm'])) {
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $password_confirm = $_POST['password_confirm'];
 
-    if($password === $password_confirm) {
+    // Vérification de la validité de l'adresse e-mail
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error[] = "Adresse e-mail invalide.";
+    }
+
+    // Vérification de la force du mot de passe
+    $password_pattern = "/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/";
+    if (!preg_match($password_pattern, $password)) {
+        $error[] = "Le mot de passe doit contenir au moins 8 caractères, une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial.";
+    }
+
+    if ($password !== $password_confirm) {
+        $error[] = "Les mots de passe ne correspondent pas.";
+    }
+
+    if (empty($error)) {
         $connexion = getDb();
-        $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$password')";
-        $connexion->exec($sql);
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute();
         header('Location: index.php');
-    } else {
-        $error[] = "Les mots de passe ne correspondent pas";
+        exit();
     }
 }
 ?>
 
 <html>
 <head>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Megacasting - Inscription</title>
-        <!-- Bootstrap -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    </head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Megacasting - Inscription</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
 <body>
 <div class="container">
     <h1>Inscription :</h1>
-    <?php if(!empty($error)){ ?>
-        <?php foreach($error as $e){ ?>
+    <?php if (!empty($error)) { ?>
+        <?php foreach ($error as $e) { ?>
             <div class="alert alert-danger">
-                <?= $e ?>
+                <?= htmlspecialchars($e) ?>
             </div>
         <?php } ?>
     <?php } ?>
