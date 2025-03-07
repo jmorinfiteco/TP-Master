@@ -12,12 +12,16 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     $req->execute();
     $user = $req->fetch();
 
-    if(!empty($user)){
+    if (!empty($user)) {
+        // Correction : Régénération de l'identifiant de session pour éviter une fixation de session
+        session_regenerate_id(true);
         $_SESSION['user'] = $user;
-        header('Location: profil.php?id='.$user['id']);
+        header('Location: profil.php?id=' . $user['id']);
+        exit;
     }
 }
 ?>
+
 <html>
 <head>
     <head>
