@@ -7,43 +7,51 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     $password = $_POST['password'];
 
     $connexion = getDb();
-    $sql = "SELECT * FROM users WHERE email = '$email' AND password = '$password'";
+    $sql = "SELECT * FROM users WHERE email = ?";
     $req = $connexion->prepare($sql);
-    $req->execute();
+    $req->execute([$email]);
     $user = $req->fetch();
 
-    if(!empty($user)){
+    if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user'] = $user;
-        header('Location: profil.php?id='.$user['id']);
+        header('Location: profil.php?id=' . $user['id']);
+    } else {
+        $error = "Email ou mot de passe incorrect";
     }
 }
 ?>
 <html>
+
 <head>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Megacasting - Connexion</title>
-        <!-- Bootstrap -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    </head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Megacasting - Connexion</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
+
 <body>
-<div class="container">
-    <h1>Connexion :</h1>
-    <form action="/" method="POST">
-        <div class="form-group">
-            <label for="email">Email :</label>
-            <input type="email" class="form-control" name="email" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Mot de passe :</label>
-            <input type="password" class="form-control" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Connexion</button>
-        <a href="register.php">S'inscrire</a>
-    </form>
-</div>
+    <div class="container">
+        <h1>Connexion :</h1>
+        <?php if (!empty($error)) { ?>
+            <div class="alert alert-danger">
+                <?= $error ?>
+            </div>
+        <?php } ?>
+        <form action="/" method="POST">
+            <div class="form-group">
+                <label for="email">Email :</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe :</label>
+                <input type="password" class="form-control" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Connexion</button>
+            <a href="register.php">S'inscrire</a>
+        </form>
+    </div>
 </body>
+
 </html>
