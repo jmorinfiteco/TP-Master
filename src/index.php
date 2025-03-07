@@ -3,7 +3,8 @@ session_start();
 require_once('bdd.php');
 
 if (isset($_POST['email']) && isset($_POST['password'])) {
-    $email = $_POST['email'];
+    // Nettoyage de l'email pour autoriser uniquement les caractères valides
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
     $password = $_POST['password'];
 
     $connexion = getDb();
@@ -12,9 +13,9 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     $req->execute();
     $user = $req->fetch();
 
-    if(!empty($user)){
+    if (!empty($user)) {
         $_SESSION['user'] = $user;
-        header('Location: profil.php?id='.$user['id']);
+        header('Location: profil.php?id=' . $user['id']);
     }
 }
 ?>
@@ -26,7 +27,9 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Megacasting - Connexion</title>
         <!-- Bootstrap -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+              integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" 
+              crossorigin="anonymous">
     </head>
 </head>
 <body>
