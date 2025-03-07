@@ -12,9 +12,9 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
     $req->execute();
     $user = $req->fetch();
 
-    if(!empty($user)){
+    if (!empty($user)) {
         $_SESSION['user'] = $user;
-        header('Location: profil.php?id='.$user['id']);
+        header('Location: profil.php?id=' . urlencode($user['id']));
     }
 }
 ?>
