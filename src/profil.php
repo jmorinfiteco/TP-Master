@@ -5,19 +5,16 @@ require_once('bdd.php');
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $connexion = getDb();
-    $sql = "SELECT * FROM users WHERE id = :id";
+    $sql = "SELECT * FROM users WHERE id = '$id'";
     $req = $connexion->prepare($sql);
-    $req->bindParam(':id', $id, PDO::PARAM_INT);
     $req->execute();
     $user = $req->fetch();
 
     if (empty($user)) {
         header('Location: index.php');
-        exit();
     }
 } else {
     header('Location: index.php');
-    exit();
 }
 ?>
 <!DOCTYPE html>
